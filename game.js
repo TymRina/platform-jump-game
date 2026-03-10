@@ -115,7 +115,8 @@ function update() {
         stars.push({
             x: starX,
             y: -STAR_SIZE,
-            size: STAR_SIZE
+            size: STAR_SIZE,
+            rotation: 0
         });
     }
     
@@ -184,9 +185,10 @@ function update() {
         platform.y += PLATFORM_SPEED;
     });
     
-    // 更新星星位置
+    // 更新星星位置和旋转
     stars.forEach(star => {
         star.y += STAR_SPEED;
+        star.rotation += 0.05; // 顺时针旋转
     });
     
     // 移除超出屏幕的平台和星星
@@ -229,9 +231,34 @@ function draw() {
     // 绘制星星
     ctx.fillStyle = '#ffeb3b';
     stars.forEach(star => {
+        ctx.save();
+        ctx.translate(star.x + star.size / 2, star.y + star.size / 2);
+        ctx.rotate(star.rotation);
         ctx.beginPath();
-        ctx.arc(star.x + star.size / 2, star.y + star.size / 2, star.size / 2, 0, Math.PI * 2);
+        const outerRadius = star.size / 2;
+        const innerRadius = outerRadius * 0.382; // 黄金比例，使五角星更美观
+        
+        for (let i = 0; i < 5; i++) {
+            // 计算外点（尖角）
+            const outerAngle = (i * 2 * Math.PI) / 5 - Math.PI / 2;
+            const outerX = outerRadius * Math.cos(outerAngle);
+            const outerY = outerRadius * Math.sin(outerAngle);
+            
+            // 计算内点（凹角）
+            const innerAngle = ((i + 0.5) * 2 * Math.PI) / 5 - Math.PI / 2;
+            const innerX = innerRadius * Math.cos(innerAngle);
+            const innerY = innerRadius * Math.sin(innerAngle);
+            
+            if (i === 0) {
+                ctx.moveTo(outerX, outerY);
+            } else {
+                ctx.lineTo(outerX, outerY);
+            }
+            ctx.lineTo(innerX, innerY);
+        }
+        ctx.closePath();
         ctx.fill();
+        ctx.restore();
     });
     
     // 绘制平台
