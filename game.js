@@ -93,6 +93,25 @@ function init() {
     // 重新开始按钮
     document.getElementById('restart-button').addEventListener('click', restartGame);
     
+    // 登录排行榜按钮
+    document.getElementById('rank-button').addEventListener('click', showRankInput);
+    
+    // 确认登录排行榜按钮
+    document.getElementById('confirm-button').addEventListener('click', confirmRankInput);
+    
+    // 取消登录排行榜按钮
+    document.getElementById('cancel-button').addEventListener('click', cancelRankInput);
+    
+    // 返回游戏结束界面按钮
+    document.getElementById('back-button').addEventListener('click', backToGameOver);
+    
+    // 昵称输入框回车确认
+    document.getElementById('nickname-input').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            confirmRankInput();
+        }
+    });
+    
     // 显示开始屏幕
     document.getElementById('start-screen').style.display = 'block';
     document.getElementById('game-over').style.display = 'none';
@@ -352,6 +371,86 @@ function draw() {
 // 显示游戏结束
 function showGameOver() {
     document.getElementById('final-score').textContent = `分数: ${score}`;
+    document.getElementById('game-over').style.display = 'block';
+}
+
+// 显示登录排行榜界面
+function showRankInput() {
+    document.getElementById('game-over').style.display = 'none';
+    document.getElementById('rank-input').style.display = 'block';
+    document.getElementById('nickname-input').value = '';
+    document.getElementById('nickname-input').focus();
+}
+
+// 取消登录排行榜
+function cancelRankInput() {
+    document.getElementById('rank-input').style.display = 'none';
+    document.getElementById('game-over').style.display = 'block';
+}
+
+// 确认登录排行榜
+function confirmRankInput() {
+    const nickname = document.getElementById('nickname-input').value.trim();
+    if (nickname) {
+        // 保存排行榜数据
+        saveRank(nickname, score);
+        // 显示排行榜
+        showRankList();
+    } else {
+        alert('请输入昵称');
+        document.getElementById('nickname-input').focus();
+    }
+}
+
+// 保存排行榜数据
+function saveRank(nickname, score) {
+    // 从localStorage获取排行榜数据
+    let ranks = JSON.parse(localStorage.getItem('platformJumpRanks') || '[]');
+    
+    // 添加新记录
+    ranks.push({ name: nickname, score: score });
+    
+    // 按分数排序
+    ranks.sort((a, b) => b.score - a.score);
+    
+    // 只保留前15名
+    ranks = ranks.slice(0, 15);
+    
+    // 保存到localStorage
+    localStorage.setItem('platformJumpRanks', JSON.stringify(ranks));
+}
+
+// 显示排行榜
+function showRankList() {
+    document.getElementById('rank-input').style.display = 'none';
+    document.getElementById('rank-list').style.display = 'block';
+    
+    // 从localStorage获取排行榜数据
+    const ranks = JSON.parse(localStorage.getItem('platformJumpRanks') || '[]');
+    
+    // 显示排行榜
+    const rankContent = document.getElementById('rank-content');
+    rankContent.innerHTML = '';
+    
+    if (ranks.length === 0) {
+        rankContent.innerHTML = '<p>暂无记录</p>';
+    } else {
+        ranks.forEach((rank, index) => {
+            const rankItem = document.createElement('div');
+            rankItem.className = 'rank-item';
+            rankItem.innerHTML = `
+                <span class="rank-number">${index + 1}.</span>
+                <span class="rank-name">${rank.name}</span>
+                <span class="rank-score">${rank.score}</span>
+            `;
+            rankContent.appendChild(rankItem);
+        });
+    }
+}
+
+// 返回游戏结束界面
+function backToGameOver() {
+    document.getElementById('rank-list').style.display = 'none';
     document.getElementById('game-over').style.display = 'block';
 }
 

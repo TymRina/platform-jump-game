@@ -104,6 +104,131 @@
         #start-button:hover {
             background-color: #45a049;
         }
+        
+        #rank-button {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        #rank-button:hover {
+            background-color: #2980b9;
+        }
+        
+        #rank-input {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 30px;
+            border-radius: 10px;
+            display: none;
+        }
+        
+        #rank-input h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        
+        #rank-input p {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        
+        #nickname-input {
+            padding: 10px;
+            font-size: 18px;
+            width: 200px;
+            margin-bottom: 20px;
+            border: none;
+            border-radius: 5px;
+        }
+        
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        #confirm-button, #cancel-button, #back-button {
+            padding: 10px 20px;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        #confirm-button {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        #confirm-button:hover {
+            background-color: #45a049;
+        }
+        
+        #cancel-button, #back-button {
+            background-color: #95a5a6;
+            color: white;
+        }
+        
+        #cancel-button:hover, #back-button:hover {
+            background-color: #7f8c8d;
+        }
+        
+        #rank-list {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 30px;
+            border-radius: 10px;
+            display: none;
+            width: 300px;
+        }
+        
+        #rank-list h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        
+        #rank-content {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+        
+        .rank-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid #333;
+        }
+        
+        .rank-number {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .rank-name {
+            flex: 1;
+            text-align: left;
+        }
+        
+        .rank-score {
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -114,6 +239,21 @@
             <h2>游戏结束</h2>
             <p id="final-score">分数: 0</p>
             <button id="restart-button">重新开始</button>
+            <button id="rank-button">登录排行榜</button>
+        </div>
+        <div id="rank-input">
+            <h2>登录排行榜</h2>
+            <p>请输入您的昵称</p>
+            <input type="text" id="nickname-input" placeholder="输入昵称" maxlength="10">
+            <div class="button-container">
+                <button id="confirm-button">确认</button>
+                <button id="cancel-button">取消</button>
+            </div>
+        </div>
+        <div id="rank-list">
+            <h2>排行榜</h2>
+            <div id="rank-content"></div>
+            <button id="back-button">返回</button>
         </div>
         <div id="start-screen">
             <h2>平台跳跃小游戏</h2>
