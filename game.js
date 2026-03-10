@@ -13,6 +13,10 @@ const STAR_SPAWN_RATE = 60; // 每60帧生成一个星星
 const STAR_SIZE = 20;
 const STAR_SPEED = 1; // 星星下落速度
 const STAR_SCORE = 100; // 吃到星星的分数
+const BOMB_SPAWN_RATE = 240; // 每240帧生成一个炸弹，数量减少一半
+const BOMB_SIZE = 25;
+const BOMB_SPEED = 1; // 炸弹下落速度
+const BOMB_PENALTY = 500; // 碰到炸弹的扣分
 const TIME_SCORE_RATE = 10; // 每秒加分
 
 // 游戏状态
@@ -20,8 +24,10 @@ let canvas, ctx;
 let player;
 let platforms;
 let stars;
+let bombs;
 let score;
 let gameOver;
+let isPlaying;
 let keys;
 let frameCount;
 let lastTimeScore;
@@ -65,9 +71,11 @@ function init() {
     // 初始化游戏状态
     score = 0;
     gameOver = false;
+    isPlaying = false;
     keys = {};
     frameCount = 0;
     stars = [];
+    bombs = [];
     lastTimeScore = Date.now();
     
     // 事件监听
@@ -79,16 +87,23 @@ function init() {
         keys[e.code] = false;
     });
     
+    // 开始游戏按钮
+    document.getElementById('start-button').addEventListener('click', startGame);
+    
     // 重新开始按钮
     document.getElementById('restart-button').addEventListener('click', restartGame);
     
-    // 开始游戏循环
-    gameLoop();
+    // 显示开始屏幕
+    document.getElementById('start-screen').style.display = 'block';
+    document.getElementById('game-over').style.display = 'none';
+    
+    // 绘制初始画面
+    draw();
 }
 
 // 游戏循环
 function gameLoop() {
-    if (!gameOver) {
+    if (!gameOver && isPlaying) {
         update();
         draw();
         frameCount++;
@@ -116,6 +131,17 @@ function update() {
             x: starX,
             y: -STAR_SIZE,
             size: STAR_SIZE,
+            rotation: 0
+        });
+    }
+    
+    // 生成炸弹
+    if (frameCount % BOMB_SPAWN_RATE === 0) {
+        const bombX = Math.random() * (GAME_WIDTH - BOMB_SIZE);
+        bombs.push({
+            x: bombX,
+            y: -BOMB_SIZE,
+            size: BOMB_SIZE,
             rotation: 0
         });
     }
@@ -180,6 +206,21 @@ function update() {
         return true;
     });
     
+    // 炸弹碰撞检测
+    bombs = bombs.filter(bomb => {
+        if (
+            player.x < bomb.x + bomb.size &&
+            player.x + player.width > bomb.x &&
+            player.y < bomb.y + bomb.size &&
+            player.y + player.height > bomb.y
+        ) {
+            // 碰到炸弹，扣分
+            score = Math.max(0, score - BOMB_PENALTY); // 确保分数不会小于0
+            return false; // 从数组中移除炸弹
+        }
+        return true;
+    });
+    
     // 更新平台位置
     platforms.forEach(platform => {
         platform.y += PLATFORM_SPEED;
@@ -191,9 +232,16 @@ function update() {
         star.rotation += 0.05; // 顺时针旋转
     });
     
-    // 移除超出屏幕的平台和星星
+    // 更新炸弹位置和旋转
+    bombs.forEach(bomb => {
+        bomb.y += BOMB_SPEED;
+        bomb.rotation += 0.08; // 顺时针旋转，速度比星星快
+    });
+    
+    // 移除超出屏幕的平台、星星和炸弹
     platforms = platforms.filter(platform => platform.y < GAME_HEIGHT);
     stars = stars.filter(star => star.y < GAME_HEIGHT);
+    bombs = bombs.filter(bomb => bomb.y < GAME_HEIGHT);
     
     // 时间加分（每秒10分）
     const currentTime = Date.now();
@@ -261,6 +309,35 @@ function draw() {
         ctx.restore();
     });
     
+    // 绘制炸弹
+    ctx.fillStyle = '#ff4444';
+    bombs.forEach(bomb => {
+        ctx.save();
+        ctx.translate(bomb.x + bomb.size / 2, bomb.y + bomb.size / 2);
+        ctx.rotate(bomb.rotation);
+        
+        // 绘制炸弹主体
+        ctx.beginPath();
+        ctx.arc(0, 0, bomb.size / 2, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // 绘制炸弹引线
+        ctx.strokeStyle = '#888888';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(0, -bomb.size / 2);
+        ctx.lineTo(0, -bomb.size);
+        ctx.stroke();
+        
+        // 绘制炸弹导火索
+        ctx.fillStyle = '#ff8800';
+        ctx.beginPath();
+        ctx.arc(0, -bomb.size, 3, 0, Math.PI * 2);
+        ctx.fill();
+        
+        ctx.restore();
+    });
+    
     // 绘制平台
     ctx.fillStyle = '#4CAF50';
     platforms.forEach(platform => {
@@ -276,6 +353,13 @@ function draw() {
 function showGameOver() {
     document.getElementById('final-score').textContent = `分数: ${score}`;
     document.getElementById('game-over').style.display = 'block';
+}
+
+// 开始游戏
+function startGame() {
+    document.getElementById('start-screen').style.display = 'none';
+    isPlaying = true;
+    gameLoop();
 }
 
 // 重新开始游戏

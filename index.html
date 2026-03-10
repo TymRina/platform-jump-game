@@ -67,6 +67,43 @@
         #restart-button:hover {
             background-color: #45a049;
         }
+        
+        #start-screen {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 30px;
+            border-radius: 10px;
+        }
+        
+        #start-screen h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        
+        #start-screen p {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        
+        #start-button {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        
+        #start-button:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
@@ -77,6 +114,12 @@
             <h2>游戏结束</h2>
             <p id="final-score">分数: 0</p>
             <button id="restart-button">重新开始</button>
+        </div>
+        <div id="start-screen">
+            <h2>平台跳跃小游戏</h2>
+            <p>使用方向键左右移动，空格键跳跃</p>
+            <p>收集星星加分，避开炸弹扣分</p>
+            <button id="start-button">开始游戏</button>
         </div>
     </div>
     
