@@ -9,15 +9,22 @@ const GRAVITY = 0.5;
 const JUMP_FORCE = -12;
 const PLATFORM_SPEED = 2;
 const SPAWN_RATE = 30; // 每30帧生成一个平台
+const STAR_SPAWN_RATE = 60; // 每60帧生成一个星星
+const STAR_SIZE = 20;
+const STAR_SPEED = 1; // 星星下落速度
+const STAR_SCORE = 100; // 吃到星星的分数
+const TIME_SCORE_RATE = 10; // 每秒加分
 
 // 游戏状态
 let canvas, ctx;
 let player;
 let platforms;
+let stars;
 let score;
 let gameOver;
 let keys;
 let frameCount;
+let lastTimeScore;
 
 // 初始化游戏
 function init() {
@@ -60,6 +67,8 @@ function init() {
     gameOver = false;
     keys = {};
     frameCount = 0;
+    stars = [];
+    lastTimeScore = Date.now();
     
     // 事件监听
     document.addEventListener('keydown', (e) => {
@@ -97,6 +106,16 @@ function update() {
             y: -PLATFORM_HEIGHT,
             width: PLATFORM_WIDTH,
             height: PLATFORM_HEIGHT
+        });
+    }
+    
+    // 生成星星
+    if (frameCount % STAR_SPAWN_RATE === 0) {
+        const starX = Math.random() * (GAME_WIDTH - STAR_SIZE);
+        stars.push({
+            x: starX,
+            y: -STAR_SIZE,
+            size: STAR_SIZE
         });
     }
     
@@ -145,13 +164,41 @@ function update() {
         player.velocityY = JUMP_FORCE;
     }
     
+    // 星星碰撞检测
+    stars = stars.filter(star => {
+        if (
+            player.x < star.x + star.size &&
+            player.x + player.width > star.x &&
+            player.y < star.y + star.size &&
+            player.y + player.height > star.y
+        ) {
+            // 吃到星星，加分
+            score += STAR_SCORE;
+            return false; // 从数组中移除星星
+        }
+        return true;
+    });
+    
     // 更新平台位置
     platforms.forEach(platform => {
         platform.y += PLATFORM_SPEED;
     });
     
-    // 移除超出屏幕的平台
+    // 更新星星位置
+    stars.forEach(star => {
+        star.y += STAR_SPEED;
+    });
+    
+    // 移除超出屏幕的平台和星星
     platforms = platforms.filter(platform => platform.y < GAME_HEIGHT);
+    stars = stars.filter(star => star.y < GAME_HEIGHT);
+    
+    // 时间加分（每秒10分）
+    const currentTime = Date.now();
+    if (currentTime - lastTimeScore >= 1000) {
+        score += TIME_SCORE_RATE;
+        lastTimeScore = currentTime;
+    }
     
     // 游戏结束检测
     if (player.y > GAME_HEIGHT) {
@@ -159,8 +206,7 @@ function update() {
         showGameOver();
     }
     
-    // 更新分数
-    score++;
+    // 更新分数显示
     document.getElementById('score-display').textContent = `分数: ${score}`;
 }
 
@@ -179,6 +225,14 @@ function draw() {
         ctx.lineTo(i + 20, GAME_HEIGHT);
         ctx.fill();
     }
+    
+    // 绘制星星
+    ctx.fillStyle = '#ffeb3b';
+    stars.forEach(star => {
+        ctx.beginPath();
+        ctx.arc(star.x + star.size / 2, star.y + star.size / 2, star.size / 2, 0, Math.PI * 2);
+        ctx.fill();
+    });
     
     // 绘制平台
     ctx.fillStyle = '#4CAF50';
