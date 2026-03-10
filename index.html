@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>平台跳跃小游戏</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #222;
+            font-family: Arial, sans-serif;
+        }
+        
+        #game-container {
+            position: relative;
+        }
+        
+        canvas {
+            border: 2px solid #fff;
+            background-color: #111;
+        }
+        
+        #score-display {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: #fff;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        #game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            text-align: center;
+            display: none;
+        }
+        
+        #game-over h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        
+        #game-over p {
+            font-size: 24px;
+            margin-bottom: 30px;
+        }
+        
+        #restart-button {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        #restart-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="gameCanvas" width="400" height="600"></canvas>
+        <div id="score-display">分数: 0</div>
+        <div id="game-over">
+            <h2>游戏结束</h2>
+            <p id="final-score">分数: 0</p>
+            <button id="restart-button">重新开始</button>
+        </div>
+    </div>
+    
+    <script src="game.js"></script>
+</body>
+</html>
